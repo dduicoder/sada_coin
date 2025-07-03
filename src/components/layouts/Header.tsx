@@ -1,23 +1,18 @@
 "use client";
 
 import { FC } from "react";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "../ui/button";
-import { signOut } from "@/auth";
 import { logout } from "@/actions/auth";
 
 const Header: FC = () => {
-  const pathname = usePathname();
-
   const { data: session, status } = useSession();
 
   // No longer needed as we'll apply active styles directly with Tailwind's 'active' variant or conditional classes
   // const getAnchorClassName = (link: string) => {
   //   return pathname!.startsWith(`/${link}`) ? classes.active : "";
   // };
-  const router = usePathname();
 
   return (
     <header className="fixed top-0 w-full h-16 px-[10%] flex items-center justify-between bg-white bg-opacity-50 backdrop-saturate-200 backdrop-blur-sm z-50">
@@ -42,9 +37,7 @@ const Header: FC = () => {
           </>
         ) : (
           <Button>
-            <Link href="/login" className="text-blue-400">
-              로그인
-            </Link>
+            <Link href="/login">로그인</Link>
           </Button>
         )}
         {/* <ThemeSwitcher /> */}

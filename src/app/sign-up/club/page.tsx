@@ -157,7 +157,7 @@ export default function Component() {
     <main>
       <Card className="mx-auto max-w-sm ">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">동아리를 가입</CardTitle>
+          <CardTitle className="text-2xl font-bold">동아리 가입</CardTitle>
           <CardDescription>
             동아리와 동아리 계정 공용 비밀번호를 입력해주세요
           </CardDescription>

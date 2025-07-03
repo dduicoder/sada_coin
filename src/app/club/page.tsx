@@ -259,323 +259,321 @@ const QRScannerPage: React.FC = () => {
   };
 
   return (
-    <main>
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-slate-800 flex items-center justify-center gap-2">
-            <Scan className="text-indigo-600" />
-            QR Payment Scanner
-          </h1>
-          <p className="text-slate-600">
-            Scan QR codes to process crypto payments
-          </p>
-        </div>
+    <main className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold text-slate-800 flex items-center justify-center gap-2">
+          <Scan className="text-indigo-600" />
+          QR 스캐너
+        </h1>
+        <p className="text-slate-600">
+          Scan QR codes to process crypto payments
+        </p>
+      </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Instructions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="w-5 h-5" />
-                How to Use
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4 text-sm">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Camera className="w-6 h-6 text-indigo-600" />
-                  </div>
-                  <h4 className="font-medium mb-1">1. Start Camera</h4>
-                  <p className="text-slate-600">
-                    Allow camera access and start scanning
-                  </p>
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* Instructions */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Wallet className="w-5 h-5" />
+              How to Use
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-4 text-sm">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Camera className="w-6 h-6 text-indigo-600" />
                 </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Scan className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <h4 className="font-medium mb-1">2. Scan QR Code</h4>
-                  <p className="text-slate-600">
-                    Point camera at the payment QR code
-                  </p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Send className="w-6 h-6 text-green-600" />
-                  </div>
-                  <h4 className="font-medium mb-1">3. Send Payment</h4>
-                  <p className="text-slate-600">
-                    Enter amount and process payment
-                  </p>
-                </div>
+                <h4 className="font-medium mb-1">1. Start Camera</h4>
+                <p className="text-slate-600">
+                  Allow camera access and start scanning
+                </p>
               </div>
-            </CardContent>
-          </Card>
-          {/* Scanner Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Camera className="w-5 h-5" />
-                QR Code Scanner
-              </CardTitle>
-              <CardDescription>
-                Point your camera at a QR code to scan payment information
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Camera Controls */}
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Scan className="w-6 h-6 text-purple-600" />
+                </div>
+                <h4 className="font-medium mb-1">2. Scan QR Code</h4>
+                <p className="text-slate-600">
+                  Point camera at the payment QR code
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Send className="w-6 h-6 text-green-600" />
+                </div>
+                <h4 className="font-medium mb-1">3. Send Payment</h4>
+                <p className="text-slate-600">
+                  Enter amount and process payment
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        {/* Scanner Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="w-5 h-5" />
+              QR Code Scanner
+            </CardTitle>
+            <CardDescription>
+              Point your camera at a QR code to scan payment information
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Camera Controls */}
+            <div className="flex gap-2">
+              <Button
+                onClick={startCamera}
+                disabled={isScanning}
+                className="flex-1"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Start Camera
+              </Button>
+              <Button
+                onClick={stopCamera}
+                disabled={!isScanning}
+                variant="outline"
+                className="flex-1"
+              >
+                <StopCircle className="w-4 h-4 mr-2" />
+                Stop Camera
+              </Button>
+            </div>
+
+            {/* Camera Feed */}
+            <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                playsInline
+                muted
+              />
+              <canvas ref={canvasRef} className="hidden" />
+
+              {/* Scanning Overlay */}
+              {isScanning && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="border-2 border-white border-dashed rounded-lg w-48 h-48 flex items-center justify-center">
+                    <div className="text-white text-center">
+                      <Scan className="w-8 h-8 mx-auto mb-2 animate-pulse" />
+                      <p className="text-sm">Scanning for QR codes...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* No Camera State */}
+              {!isScanning && (
+                <div className="absolute inset-0 flex items-center justify-center text-white">
+                  <div className="text-center">
+                    <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p>Camera not active</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Camera Permission Error */}
+            {cameraPermission === "denied" && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Camera access is required to scan QR codes. Please allow
+                  camera permission in your browser settings.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Scan Result */}
+            {scanResult && (
+              <Alert>
+                <CheckCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <div className="space-y-1">
+                    <div>
+                      <strong>QR Code Detected!</strong>
+                    </div>
+                    <div className="text-sm">
+                      <strong>Data:</strong> {scanResult.data}
+                    </div>
+                    <div className="text-sm">
+                      <strong>Scanned:</strong>{" "}
+                      {scanResult.timestamp.toLocaleTimeString()}
+                    </div>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Payment Processing Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Payment Processing
+            </CardTitle>
+            <CardDescription>
+              Process payment to the scanned wallet address
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* From User ID */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                From User ID:
+              </label>
+              <Input
+                value={fromUserId}
+                onChange={(e) => setFromUserId(e.target.value)}
+                placeholder="Enter your user ID"
+                className="w-full"
+              />
+            </div>
+
+            {/* Scanned Hash */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                Recipient Hash:
+              </label>
               <div className="flex gap-2">
-                <Button
-                  onClick={startCamera}
-                  disabled={isScanning}
+                <Input
+                  value={userHash}
+                  onChange={(e) => setUserHash(e.target.value)}
+                  placeholder="Hash will appear after scanning"
                   className="flex-1"
-                >
-                  <Camera className="w-4 h-4 mr-2" />
-                  Start Camera
-                </Button>
-                <Button
-                  onClick={stopCamera}
-                  disabled={!isScanning}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <StopCircle className="w-4 h-4 mr-2" />
-                  Stop Camera
-                </Button>
-              </div>
-
-              {/* Camera Feed */}
-              <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                <video
-                  ref={videoRef}
-                  className="w-full h-full object-cover"
-                  playsInline
-                  muted
                 />
-                <canvas ref={canvasRef} className="hidden" />
-
-                {/* Scanning Overlay */}
-                {isScanning && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="border-2 border-white border-dashed rounded-lg w-48 h-48 flex items-center justify-center">
-                      <div className="text-white text-center">
-                        <Scan className="w-8 h-8 mx-auto mb-2 animate-pulse" />
-                        <p className="text-sm">Scanning for QR codes...</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* No Camera State */}
-                {!isScanning && (
-                  <div className="absolute inset-0 flex items-center justify-center text-white">
-                    <div className="text-center">
-                      <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p>Camera not active</p>
-                    </div>
-                  </div>
-                )}
+                <Button onClick={resetForm} variant="outline" size="sm">
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
               </div>
-
-              {/* Camera Permission Error */}
-              {cameraPermission === "denied" && (
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Camera access is required to scan QR codes. Please allow
-                    camera permission in your browser settings.
-                  </AlertDescription>
-                </Alert>
+              {userHash && (
+                <Badge variant="secondary" className="text-xs">
+                  <Hash className="w-3 h-3 mr-1" />
+                  {userHash}
+                </Badge>
               )}
+            </div>
 
-              {/* Scan Result */}
-              {scanResult && (
-                <Alert>
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    <div className="space-y-1">
-                      <div>
-                        <strong>QR Code Detected!</strong>
-                      </div>
-                      <div className="text-sm">
-                        <strong>Data:</strong> {scanResult.data}
-                      </div>
-                      <div className="text-sm">
-                        <strong>Scanned:</strong>{" "}
-                        {scanResult.timestamp.toLocaleTimeString()}
-                      </div>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Payment Processing Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
-                Payment Processing
-              </CardTitle>
-              <CardDescription>
-                Process payment to the scanned wallet address
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* From User ID */}
-              <div className="space-y-2">
+            {/* Amount */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2 space-y-2">
                 <label className="text-sm font-medium text-slate-700">
-                  From User ID:
+                  Amount:
                 </label>
                 <Input
-                  value={fromUserId}
-                  onChange={(e) => setFromUserId(e.target.value)}
-                  placeholder="Enter your user ID"
-                  className="w-full"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
                 />
               </div>
-
-              {/* Scanned Hash */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">
-                  Recipient Hash:
+                  Currency:
                 </label>
-                <div className="flex gap-2">
-                  <Input
-                    value={userHash}
-                    onChange={(e) => setUserHash(e.target.value)}
-                    placeholder="Hash will appear after scanning"
-                    className="flex-1"
-                  />
-                  <Button onClick={resetForm} variant="outline" size="sm">
-                    <RefreshCw className="w-4 h-4" />
-                  </Button>
-                </div>
-                {userHash && (
-                  <Badge variant="secondary" className="text-xs">
-                    <Hash className="w-3 h-3 mr-1" />
-                    {userHash}
-                  </Badge>
-                )}
-              </div>
-
-              {/* Amount */}
-              <div className="grid grid-cols-3 gap-2">
-                <div className="col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-slate-700">
-                    Amount:
-                  </label>
-                  <Input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">
-                    Currency:
-                  </label>
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="USD">USD</option>
-                    <option value="BTC">BTC</option>
-                    <option value="ETH">ETH</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Process Payment Button */}
-              <Button
-                onClick={processPayment}
-                disabled={!userHash || !amount || isProcessing}
-                className="w-full"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Payment
-                  </>
-                )}
-              </Button>
-
-              {/* Error Display */}
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              {/* Server Response */}
-              {serverResponse && (
-                <Alert
-                  variant={serverResponse.success ? "default" : "destructive"}
+                <select
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md"
                 >
-                  {serverResponse.success ? (
-                    <CheckCircle className="h-4 w-4" />
-                  ) : (
-                    <AlertCircle className="h-4 w-4" />
-                  )}
-                  <AlertDescription>
-                    <div className="space-y-1">
-                      <div>
-                        <strong>{serverResponse.message}</strong>
-                      </div>
-                      {serverResponse.transactionId && (
-                        <div className="text-sm">
-                          <strong>Transaction ID:</strong>{" "}
-                          {serverResponse.transactionId}
-                        </div>
-                      )}
-                      {serverResponse.error && (
-                        <div className="text-sm text-red-600">
-                          <strong>Error:</strong> {serverResponse.error}
-                        </div>
-                      )}
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {/* Manual Hash Entry */}
-              <div className="pt-4 border-t">
-                <p className="text-sm text-slate-600 mb-2">
-                  You can also manually enter a hash for testing:
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => setUserHash("a1b2c3d4")}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Test Hash 1
-                  </Button>
-                  <Button
-                    onClick={() => setUserHash("e5f6g7h8")}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Test Hash 2
-                  </Button>
-                </div>
+                  <option value="USD">USD</option>
+                  <option value="BTC">BTC</option>
+                  <option value="ETH">ETH</option>
+                </select>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+
+            {/* Process Payment Button */}
+            <Button
+              onClick={processPayment}
+              disabled={!userHash || !amount || isProcessing}
+              className="w-full"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Payment
+                </>
+              )}
+            </Button>
+
+            {/* Error Display */}
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Server Response */}
+            {serverResponse && (
+              <Alert
+                variant={serverResponse.success ? "default" : "destructive"}
+              >
+                {serverResponse.success ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <AlertCircle className="h-4 w-4" />
+                )}
+                <AlertDescription>
+                  <div className="space-y-1">
+                    <div>
+                      <strong>{serverResponse.message}</strong>
+                    </div>
+                    {serverResponse.transactionId && (
+                      <div className="text-sm">
+                        <strong>Transaction ID:</strong>{" "}
+                        {serverResponse.transactionId}
+                      </div>
+                    )}
+                    {serverResponse.error && (
+                      <div className="text-sm text-red-600">
+                        <strong>Error:</strong> {serverResponse.error}
+                      </div>
+                    )}
+                  </div>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Manual Hash Entry */}
+            <div className="pt-4 border-t">
+              <p className="text-sm text-slate-600 mb-2">
+                You can also manually enter a hash for testing:
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setUserHash("a1b2c3d4")}
+                  variant="outline"
+                  size="sm"
+                >
+                  Test Hash 1
+                </Button>
+                <Button
+                  onClick={() => setUserHash("e5f6g7h8")}
+                  variant="outline"
+                  size="sm"
+                >
+                  Test Hash 2
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
 
-const protectedRoutes = ["/sad"];
+const protectedRoutes = ["/user", "/admin", "/club"];
 
 export default async function middleware(request: NextRequest) {
   const session = await auth();
@@ -18,3 +18,7 @@ export default async function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
+
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|.*\\.png$|.*\\.jpg$).*)"],
+};
