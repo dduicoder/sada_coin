@@ -31,6 +31,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { clubs, getClubNameById } from "@/constants/clubs";
+import { hashPassword } from "@/lib/auth-utils";
 
 const formSchema = z.object({
   id: z
@@ -49,61 +51,6 @@ const formSchema = z.object({
   club_id: z.string().min(1, "동아리를 선택해주세요"),
 });
 
-const clubs = [
-  {
-    subject: "수학",
-    clubs_list: [
-      { id: "limes", name: "리메스" },
-      { id: "rootm", name: "루트엠" },
-      { id: "laonzena", name: "라온제나" },
-      { id: "naplace", name: "나플라스" },
-    ],
-  },
-
-  {
-    subject: "물리",
-    clubs_list: [
-      { id: "andamiro", name: "안다미로" },
-      { id: "tips", name: "팁스" },
-      { id: "neo", name: "네오" },
-    ],
-  },
-  {
-    subject: "화학",
-    clubs_list: [
-      { id: "chex", name: "첵스" },
-      { id: "eq", name: "EQ" },
-      { id: "edta", name: "에타" },
-    ],
-  },
-  {
-    subject: "생명",
-    clubs_list: [
-      { id: "dna", name: "DNA" },
-      { id: "invitro", name: "인비트로" },
-      { id: "globe", name: "글로브" },
-    ],
-  },
-  {
-    subject: "지구",
-    clubs_list: [
-      { id: "archi", name: "아르키" },
-      { id: "pulcherrima", name: "풀체리마" },
-    ],
-  },
-  {
-    subject: "정보",
-    clubs_list: [
-      { id: "sada", name: "SADA" },
-      { id: "next", name: "NeXT" },
-    ],
-  },
-  {
-    subject: "융합과학",
-    clubs_list: [{ id: "unrevr", name: "언리버" }],
-  },
-];
-
 export default function Component() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -115,16 +62,6 @@ export default function Component() {
     },
   });
 
-  async function hashPassword(password: string) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
-  }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -154,7 +91,7 @@ export default function Component() {
     <main>
       <Card className="mx-auto max-w-sm ">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">학생 가입</CardTitle>
+          <CardTitle className="text-2xl font-bold">학생 등록</CardTitle>
           <CardDescription>
             학번과 이름, 비밀번호와 동아리를 입력해주세요
           </CardDescription>
@@ -258,7 +195,7 @@ export default function Component() {
               />
 
               <Button type="submit" className="w-full">
-                Login
+                등록
               </Button>
             </form>
           </Form>

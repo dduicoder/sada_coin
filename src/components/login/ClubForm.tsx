@@ -22,68 +22,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-
-const clubs = [
-  {
-    subject: "수학",
-    clubs_list: [
-      { id: "limes", name: "리메스" },
-      { id: "rootm", name: "루트엠" },
-      { id: "laonzena", name: "라온제나" },
-      { id: "naplace", name: "나플라스" },
-    ],
-  },
-
-  {
-    subject: "물리",
-    clubs_list: [
-      { id: "andamiro", name: "안다미로" },
-      { id: "tips", name: "팁스" },
-      { id: "neo", name: "네오" },
-    ],
-  },
-  {
-    subject: "화학",
-    clubs_list: [
-      { id: "chex", name: "첵스" },
-      { id: "eq", name: "EQ" },
-      { id: "edta", name: "에타" },
-    ],
-  },
-  {
-    subject: "생명",
-    clubs_list: [
-      { id: "dna", name: "DNA" },
-      { id: "invitro", name: "인비트로" },
-      { id: "globe", name: "글로브" },
-    ],
-  },
-  {
-    subject: "지구",
-    clubs_list: [
-      { id: "archi", name: "아르키" },
-      { id: "pulcherrima", name: "풀체리마" },
-    ],
-  },
-  {
-    subject: "정보",
-    clubs_list: [
-      { id: "sada", name: "SADA" },
-      { id: "next", name: "NeXT" },
-    ],
-  },
-  {
-    subject: "융합과학",
-    clubs_list: [{ id: "unrevr", name: "언리버" }],
-  },
-];
+import { clubs } from "@/constants/clubs";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   id: z.string().min(1, "동아리를 선택해 주세요."),
-  password: z.string(),
+  password: z.string().min(1, "비밀번호를 입력해 주세요."),
 });
 
 const ClubForm = () => {
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -92,19 +43,21 @@ const ClubForm = () => {
     },
   });
 
-  async function hashPassword(password: string) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
-  }
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await login(values.id, await hashPassword(values.password));
+    setErrorMessage("");
+    try {
+      const result = await login(values);
+      if (result?.error) {
+        setErrorMessage(result.error.message || "로그인에 실패했습니다.");
+      } else if (result?.success) {
+        // Login successful, redirect will be handled by NextAuth
+        setErrorMessage("");
+        router.push("/");
+        window.location.reload();
+      }
+    } catch (error) {
+      setErrorMessage("로그인 중 오류가 발생했습니다.");
+    }
   }
 
   return (
@@ -167,6 +120,11 @@ const ClubForm = () => {
             </FormItem>
           )}
         />
+        {errorMessage && (
+          <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-md">
+            {errorMessage}
+          </div>
+        )}
 
         <Button type="submit" className="w-full">
           로그인

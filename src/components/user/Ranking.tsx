@@ -1,5 +1,4 @@
-import { TabsContent } from "@radix-ui/react-tabs";
-
+import { TabsContent } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -7,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Badge, RefreshCw, Trophy } from "lucide-react";
+import { RefreshCw, Trophy } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Table,

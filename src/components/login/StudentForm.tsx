@@ -1,3 +1,4 @@
+"use client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -12,13 +13,17 @@ import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/actions/auth";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   id: z.string().regex(/^\d+$/, "학번은 숫자만 입력 가능합니다."),
-  password: z.string(),
+  password: z.string().min(1, "비밀번호를 입력해 주세요."),
 });
 
 const StudentForm = () => {
+  const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -27,19 +32,22 @@ const StudentForm = () => {
     },
   });
 
-  async function hashPassword(password: string) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-    return hashHex;
-  }
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await login(values.id, await hashPassword(values.password));
+    setErrorMessage("");
+    try {
+      const result = await login(values);
+      console.log(result);
+      if (result?.error) {
+        setErrorMessage(result.error.message || "로그인에 실패했습니다.");
+      } else if (result?.success) {
+        // Login successful, redirect will be handled by NextAuth
+        setErrorMessage("");
+        router.push("/");
+        window.location.reload();
+      }
+    } catch (error) {
+      setErrorMessage("로그인 중 오류가 발생했습니다.");
+    }
   }
 
   return (
@@ -71,7 +79,11 @@ const StudentForm = () => {
             </FormItem>
           )}
         />
-
+        {errorMessage && (
+          <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-md">
+            {errorMessage}
+          </div>
+        )}
         <Button type="submit" className="w-full">
           로그인
         </Button>

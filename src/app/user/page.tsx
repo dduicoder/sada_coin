@@ -2,9 +2,8 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { Wallet, QrCode, Trophy } from "lucide-react";
+import { Wallet, Trophy } from "lucide-react";
 import { useSession } from "next-auth/react";
-import QRCode from "@/components/user/QRCode";
 import Balance from "@/components/user/Balance";
 import Ranking from "@/components/user/Ranking";
 
@@ -35,13 +34,9 @@ const CoinRankingDashboard = () => {
         </div>
 
         <Tabs defaultValue="wallet" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-16">
+          <TabsList className="grid w-full grid-cols-2 h-16">
             <TabsTrigger value="wallet" className="flex items-center gap-2">
               <Wallet className="w-4 h-4" />내 계좌
-            </TabsTrigger>
-            <TabsTrigger value="payment" className="flex items-center gap-2">
-              <QrCode className="w-4 h-4" />
-              QR 코드
             </TabsTrigger>
             <TabsTrigger value="rankings" className="flex items-center gap-2">
               <Trophy className="w-4 h-4" />
@@ -50,7 +45,6 @@ const CoinRankingDashboard = () => {
           </TabsList>
 
           <Balance user={user} />
-          <QRCode user={user} />
           <Ranking />
         </Tabs>
       </div>

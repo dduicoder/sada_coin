@@ -1,7 +1,6 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-// Extend the User type to include 'hash' and 'type'
 declare module "next-auth" {
   interface User {
     id: string;
@@ -12,23 +11,38 @@ declare module "next-auth" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/login",
+  },
   providers: [
     Credentials({
       name: "credentials",
       credentials: {
-        id: { label: "Username", type: "text" },
+        id: { label: "ID", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(creds) {
-        const res = await fetch("http://127.0.0.1:5000/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(creds),
-        });
+        try {
+          const res = await fetch("http://127.0.0.1:5000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(creds),
+          });
 
-        const user = await res.json();
-        return res.ok && user ? user : null;
+          const responseData = await res.json();
+
+          if (!res.ok) {
+            // Throw an error with the specific message from Flask
+            throw new Error(responseData.message || "로그인에 실패했습니다.");
+          }
+
+          return responseData;
+        } catch (error) {
+          // Re-throw the error to be handled by the login action
+          throw error;
+        }
       },
     }),
   ],
