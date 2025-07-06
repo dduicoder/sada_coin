@@ -12,9 +12,19 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useQRCode } from "next-qrcode";
 
+interface activity {
+  amount: number;
+  description: string;
+  sender_hash: string;
+  receiver_hash: string;
+  timestamp: string;
+}
+
 const Balance = ({ user }: { user: User }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [balanceLoading, setBalanceLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<number>(0);
+  const [activityLoading, setActivityLoading] = useState<boolean>(false);
+  const [activities, setActivities] = useState<activity[]>([]);
 
   const { Image } = useQRCode();
 
@@ -28,17 +38,27 @@ const Balance = ({ user }: { user: User }) => {
   };
 
   async function fetchBalance() {
-    setLoading(true);
+    setBalanceLoading(true);
     const response = await fetch(`/api/user-balance?id=${user.id}`);
     const json = await response.json();
 
     setBalance(json["balance"]);
-    setLoading(false);
+    setBalanceLoading(false);
+  }
+
+  async function fetchAcitivies() {
+    setActivityLoading(true);
+    const response = await fetch(`/api/user-transactions?hash=${user.hash}`);
+    const json = await response.json();
+
+    setActivities(json);
+    setActivityLoading(false);
   }
 
   useEffect(() => {
     fetchBalance();
-  }, [user.id]);
+    fetchAcitivies();
+  }, [user.id, user.hash]);
 
   return (
     <TabsContent value="wallet" className="space-y-4">
@@ -65,8 +85,8 @@ const Balance = ({ user }: { user: User }) => {
                   </div>
                 </div>
 
-                <Button onClick={fetchBalance} disabled={loading}>
-                  <RefreshCw className={loading ? "animate-spin" : ""} />
+                <Button onClick={fetchBalance} disabled={balanceLoading}>
+                  <RefreshCw className={balanceLoading ? "animate-spin" : ""} />
                 </Button>
               </div>
             </div>
@@ -104,15 +124,62 @@ const Balance = ({ user }: { user: User }) => {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <NotebookPen className="w-5 h-5" />내 활동
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <NotebookPen className="w-5 h-5" />내 활동
+            </div>
+            <Button
+              onClick={fetchAcitivies}
+              disabled={activityLoading}
+              size="sm"
+            >
+              <RefreshCw className={activityLoading ? "animate-spin" : ""} />
+            </Button>
           </CardTitle>
           <CardDescription>잘 즐기고 계신가요?</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center text-gray-500">
-            활동 기록이 표시됩니다.
-          </div>
+          {activityLoading ? (
+            <div className="text-center text-gray-500">
+              활동 기록을 불러오는 중...
+            </div>
+          ) : activities.length === 0 ? (
+            <div className="text-center text-gray-500">
+              활동 기록이 없습니다.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {activities.map((activity, index) => {
+                const isOutgoing = activity.sender_hash === user.hash;
+                return (
+                  <div
+                    key={index}
+                    className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium">{activity.description}</div>
+                      <div className="text-sm text-gray-500">
+                        {new Date(activity.timestamp).toLocaleString("ko-KR")}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {isOutgoing
+                          ? `보낸 곳: ${activity.receiver_hash}`
+                          : `받은 곳: ${activity.sender_hash}`}
+                      </div>
+                    </div>
+                    <div
+                      className={`font-bold ${
+                        isOutgoing ? "text-red-600" : "text-green-600"
+                      }`}
+                    >
+                      {isOutgoing ? "-" : "+"}
+                      {formatPrice(Math.abs(activity.amount))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
     </TabsContent>

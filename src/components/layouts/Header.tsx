@@ -21,7 +21,9 @@ const Header: FC = () => {
       <nav className="flex items-center gap-4">
         {status === "authenticated" && session!.user !== undefined ? (
           <>
-            <Link href="/user">{session.user.name}님</Link>
+            <Link href={session.user.type === "student" ? "/user" : "/club"}>
+              {session.user.name}님
+            </Link>
             <Button
               onClick={async () => {
                 await logout();
@@ -34,9 +36,9 @@ const Header: FC = () => {
             </Button>
           </>
         ) : (
-          <Button>
-            <Link href="/login">로그인</Link>
-          </Button>
+          <Link href="/login/user">
+            <Button>로그인</Button>
+          </Link>
         )}
         {/* <ThemeSwitcher /> */}
       </nav>

@@ -1,5 +1,6 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import axios from "axios";
 
 declare module "next-auth" {
   interface User {
@@ -24,24 +25,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(creds) {
+        // throw new Error("foobar");
         try {
-          const res = await fetch("http://127.0.0.1:5000/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(creds),
-          });
+          const res = await axios.post(
+            `${process.env.BACKEND_URL}/login` || "",
+            creds
+          );
 
-          const responseData = await res.json();
-
-          if (!res.ok) {
-            // Throw an error with the specific message from Flask
-            throw new Error(responseData.message || "로그인에 실패했습니다.");
+          if (res.data) {
+            return res.data;
           }
-
-          return responseData;
         } catch (error) {
           // Re-throw the error to be handled by the login action
-          throw error;
+          throw new Error("error.response.data.message");
+
+          // throw new Error("error.response.data.message");
         }
       },
     }),

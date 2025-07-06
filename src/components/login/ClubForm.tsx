@@ -50,9 +50,8 @@ const ClubForm = () => {
       if (result?.error) {
         setErrorMessage(result.error.message || "로그인에 실패했습니다.");
       } else if (result?.success) {
-        // Login successful, redirect will be handled by NextAuth
         setErrorMessage("");
-        router.push("/");
+        router.push("/club");
         window.location.reload();
       }
     } catch (error) {

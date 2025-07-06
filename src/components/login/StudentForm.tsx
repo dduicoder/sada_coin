@@ -42,7 +42,7 @@ const StudentForm = () => {
       } else if (result?.success) {
         // Login successful, redirect will be handled by NextAuth
         setErrorMessage("");
-        router.push("/");
+        router.push("/user");
         window.location.reload();
       }
     } catch (error) {

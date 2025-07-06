@@ -12,11 +12,6 @@ interface QRCameraProps {
   onScanningChange: (scanning: boolean) => void;
 }
 
-interface QRScanResult {
-  data: string;
-  timestamp: Date;
-}
-
 export const QRCamera: React.FC<QRCameraProps> = ({
   onQRDetected,
   isScanning,
@@ -149,11 +144,11 @@ export const QRCamera: React.FC<QRCameraProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Camera Controls */}
+      {/* 카메라 컨트롤 */}
       <div className="flex gap-2">
         <Button onClick={startCamera} disabled={isScanning} className="flex-1">
           <Camera className="w-4 h-4 mr-2" />
-          Start Camera
+          카메라 시작
         </Button>
         <Button
           onClick={stopCamera}
@@ -162,11 +157,11 @@ export const QRCamera: React.FC<QRCameraProps> = ({
           className="flex-1"
         >
           <StopCircle className="w-4 h-4 mr-2" />
-          Stop Camera
+          카메라 중지
         </Button>
       </div>
 
-      {/* Camera Feed */}
+      {/* 카메라 피드 */}
       <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
         <video
           ref={videoRef}
@@ -176,41 +171,41 @@ export const QRCamera: React.FC<QRCameraProps> = ({
         />
         <canvas ref={canvasRef} className="hidden" />
 
-        {/* Scanning Overlay */}
+        {/* 스캔 오버레이 */}
         {isScanning && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="border-2 border-white border-dashed rounded-lg w-48 h-48 flex items-center justify-center">
               <div className="text-white text-center">
                 <Scan className="w-8 h-8 mx-auto mb-2 animate-pulse" />
-                <p className="text-sm">Scanning for QR codes...</p>
+                <p className="text-sm">QR 코드를 스캔 중...</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* No Camera State */}
+        {/* 카메라 비활성 상태 */}
         {!isScanning && (
           <div className="absolute inset-0 flex items-center justify-center text-white">
             <div className="text-center">
               <Camera className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>Camera not active</p>
+              <p>카메라가 꺼져 있습니다</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Camera Permission Error */}
+      {/* 카메라 권한 오류 */}
       {cameraPermission === "denied" && (
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Camera access is required to scan QR codes. Please allow camera
-            permission in your browser settings.
+            QR 코드를 스캔하려면 카메라 접근 권한이 필요합니다. 브라우저
+            설정에서 카메라 권한을 허용해주세요.
           </AlertDescription>
         </Alert>
       )}
 
-      {/* Error Display */}
+      {/* 일반 오류 표시 */}
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />

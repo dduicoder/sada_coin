@@ -5,6 +5,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardAction,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { clubs, getClubNameById } from "@/constants/clubs";
 import { hashPassword } from "@/lib/auth-utils";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 const formSchema = z.object({
   id: z
@@ -61,7 +64,6 @@ export default function Component() {
       club_id: "",
     },
   });
-
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -93,8 +95,26 @@ export default function Component() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">학생 등록</CardTitle>
           <CardDescription>
-            학번과 이름, 비밀번호와 동아리를 입력해주세요
+            <div>학번과 이름, 비밀번호와 동아리를 입력해주세요</div>
+            <div>
+              계정이 있다면?{" "}
+              <Link href="../login/user" className="text-blue-400">
+                로그인하기
+              </Link>
+            </div>
           </CardDescription>
+          <CardAction>
+            <Link href="/sign-up/club">
+              <Button
+                variant="secondary"
+                size="icon"
+                className="size-full px-3 py-2"
+              >
+                동아리 회원가입
+                <ChevronRight className="ml-2 size-4" />
+              </Button>
+            </Link>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <Form {...form}>

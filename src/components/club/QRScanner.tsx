@@ -30,10 +30,10 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanResult }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Camera className="w-5 h-5" />
-          QR Code Scanner
+          QR 코드 스캐너
         </CardTitle>
         <CardDescription>
-          Point your camera at a QR code to scan payment information
+          카메라를 QR 코드에 맞추면 유저 정보를 스캔합니다
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -43,17 +43,17 @@ export const QRScanner: React.FC<QRScannerProps> = ({ onScanResult }) => {
           onScanningChange={setIsScanning}
         />
 
-        {/* Scan Result */}
+        {/* 스캔 결과 */}
         {scanResult && (
           <Alert>
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>
               <div className="space-y-1">
                 <div>
-                  <strong>QR Code Detected!</strong>
+                  <strong>QR 코드가 감지되었습니다!</strong>
                 </div>
                 <div className="text-sm">
-                  <strong>Data:</strong> {scanResult}
+                  <strong>데이터:</strong> {scanResult}
                 </div>
               </div>
             </AlertDescription>

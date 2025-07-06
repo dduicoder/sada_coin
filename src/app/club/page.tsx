@@ -27,12 +27,10 @@ const QRScannerPage: React.FC = () => {
           <Scan className="text-indigo-600" />
           QR 스캐너
         </h1>
-        <p className="text-slate-600">
-          Scan QR codes to process crypto payments
-        </p>
+        <p className="text-slate-600">QR 코드를 스캔하여 결제를 처리하세요</p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-1 gap-6">
         {/* Instructions */}
         <InstructionsCard />
 

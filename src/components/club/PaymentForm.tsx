@@ -9,28 +9,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Send,
   Loader2,
-  RefreshCw,
-  Hash,
   CreditCard,
   CheckCircle,
   AlertCircle,
   ArrowRight,
-  ArrowLeft,
   User,
   Building,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import {
-  PREDEFINED_ACTIVITIES,
-  getActivitiesByType,
-  Activity,
-} from "@/data/activities";
+import { PREDEFINED_ACTIVITIES, Activity } from "@/data/activities";
 
 interface PaymentRequest {
   fromUserId: string;
@@ -170,14 +162,12 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="w-5 h-5" />
-          Payment Processing
+          결제 처리
         </CardTitle>
-        <CardDescription>
-          Process payment to the scanned wallet address
-        </CardDescription>
+        <CardDescription>스캔된 유저로 결제를 진행합니다</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Activity Selection */}
+        {/* 활동 선택 */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700">
             활동 선택:
@@ -218,14 +208,14 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
           </div>
         </div>
 
-        {/* Payment Display */}
+        {/* 결제 미리보기 */}
         {selectedActivity && userHash && amount && session?.user && (
           <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
             <h3 className="text-sm font-semibold text-gray-700 mb-3">
-              Payment Preview
+              결제 미리보기
             </h3>
 
-            {/* Payment Direction */}
+            {/* 결제 방향 */}
             <div className="flex items-center justify-center mb-4">
               {selectedActivity.type === "club_to_student" ? (
                 <div className="flex items-center gap-3">
@@ -262,16 +252,16 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
               )}
             </div>
 
-            {/* Payment Details */}
+            {/* 결제 상세 정보 */}
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Activity:</span>
+                <span className="text-sm text-gray-600">활동명:</span>
                 <span className="text-sm font-medium">
                   {selectedActivity.title}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Amount:</span>
+                <span className="text-sm text-gray-600">금액:</span>
                 <span
                   className={`text-lg font-bold ${
                     selectedActivity.type === "club_to_student"
@@ -279,11 +269,11 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
                       : "text-red-600"
                   }`}
                 >
-                  {amount} SADA
+                  {amount} 코인
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Type:</span>
+                <span className="text-sm text-gray-600">분류:</span>
                 <Badge
                   variant={
                     selectedActivity.type === "club_to_student"
@@ -293,15 +283,15 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
                   className="text-xs"
                 >
                   {selectedActivity.type === "club_to_student"
-                    ? "Payment"
-                    : "Collection"}
+                    ? "코인 획득"
+                    : "코인 사용"}
                 </Badge>
               </div>
             </div>
           </div>
         )}
 
-        {/* Process Payment Button */}
+        {/* 결제 실행 버튼 */}
         <Button
           onClick={processPayment}
           disabled={!userHash || !amount || isProcessing}
@@ -310,17 +300,17 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
           {isProcessing ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Processing...
+              처리 중...
             </>
           ) : (
             <>
               <Send className="w-4 h-4 mr-2" />
-              Send Payment
+              결제 전송
             </>
           )}
         </Button>
 
-        {/* Error Display */}
+        {/* 오류 표시 */}
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -328,7 +318,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
           </Alert>
         )}
 
-        {/* Server Response */}
+        {/* 서버 응답 표시 */}
         {serverResponse && (
           <Alert variant={serverResponse.success ? "default" : "destructive"}>
             {serverResponse.success ? (
@@ -343,7 +333,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ userHash }) => {
                 </div>
                 {serverResponse.error && (
                   <div className="text-sm text-red-600">
-                    <strong>Error:</strong> {serverResponse.error}
+                    <strong>오류:</strong> {serverResponse.error}
                   </div>
                 )}
               </div>

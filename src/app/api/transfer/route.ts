@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     // Make request to Flask backend
-    const response = await fetch("http://127.0.0.1:5000/transfer", {
+    const response = await fetch(`${process.env.BACKEND_URL}/transfer`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
