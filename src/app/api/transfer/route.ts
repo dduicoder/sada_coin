@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 
 export async function POST(request: Request) {
   try {
-    // Check authentication
     const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json(
@@ -13,14 +12,9 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const {
-      sender_hash,
-      receiver_hash,
-      amount,
-      description = "QR 코드 송금",
-    } = body;
+    const { sender_hash, receiver_hash, amount, title, transaction_type } =
+      body;
 
-    // Validate required fields
     if (!sender_hash || !receiver_hash || !amount) {
       return NextResponse.json(
         {
@@ -50,7 +44,8 @@ export async function POST(request: Request) {
         sender_hash,
         receiver_hash,
         amount: numAmount,
-        description,
+        title,
+        transaction_type,
       }),
     });
 

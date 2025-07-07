@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   // TODO: Update metadata
@@ -25,12 +26,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={pretendard.className}>
         <SessionProvider>
-          <Header />
-          {children}
-          <Footer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            {children}
+            <Footer />
+          </ThemeProvider>
         </SessionProvider>
       </body>
     </html>

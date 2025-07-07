@@ -36,57 +36,84 @@ import { clubs, getClubNameById } from "@/constants/clubs";
 import { hashPassword } from "@/lib/auth-utils";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 
-const formSchema = z.object({
-  id: z
-    .string()
-    .min(4, "학번은 네 자리만 가능합니다.")
-    .max(4, "학번은 네 자리만 가능합니다.")
-    .regex(/^\d+$/, "학번은 숫자만 입력 가능합니다."),
-  name: z
-    .string()
-    .min(2, "이름은 최소 두 글자입니다.")
-    .max(50, "이름은 최대 50글자입니다."),
-  password: z
-    .string()
-    .min(6, "비밀번호는 최소 여섯 글자입니다.")
-    .max(50, "비밀번호는 최대 50글자입니다."),
-  club_id: z.string().min(1, "동아리를 선택해주세요"),
-});
+const formSchema = z
+  .object({
+    id: z
+      .string()
+      .min(4, "학번은 네 자리만 가능합니다.")
+      .max(4, "학번은 네 자리만 가능합니다.")
+      .regex(/^\d+$/, "학번은 숫자만 입력 가능합니다."),
+    name: z
+      .string()
+      .min(2, "이름은 최소 두 글자입니다.")
+      .max(50, "이름은 최대 50글자입니다."),
+    password: z
+      .string()
+      .min(6, "비밀번호는 최소 여섯 글자입니다.")
+      .max(50, "비밀번호는 최대 50글자입니다."),
+    password_check: z
+      .string()
+      .min(6, "비밀번호는 최소 여섯 글자입니다.")
+      .max(50, "비밀번호는 최대 50글자입니다."),
+    club_id: z.string().min(1, "동아리를 선택해주세요."),
+  })
+  .refine((data) => data.password === data.password_check, {
+    message: "비밀번호가 맞지 않아요.",
+    path: ["password_check"],
+  });
 
-export default function Component() {
+export default function UserSignUpPage() {
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: "",
       name: "",
       password: "",
+      password_check: "",
       club_id: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    fetch("http://127.0.0.1:5000/users", {
-      method: "POST",
-      headers: {
-        // fix cors
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: values.id,
-        name: values.name,
-        password: await hashPassword(values.password),
-        club_id: values.club_id,
-      }),
-    }).then((response) => {
+    const id = values.id;
+    const name = values.name;
+    const password = await hashPassword(values.password);
+    const club_id = values.club_id;
+
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/sign-up/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          name,
+          password,
+          club_id,
+        }),
+      });
+
+      // .then((response) => {
       if (response.ok) {
-        alert("가입이 완료되었습니다!");
-        form.reset();
+        signIn("credentials", {
+          id,
+          password,
+          redirectTo: "/",
+        });
       } else {
-        alert("가입에 실패했습니다. 다시 시도해주세요.");
+        setErrorMessage("가입에 실패했습니다. 다시 시도해주세요.");
       }
-    });
+      // });
+    } catch (error: any) {
+      console.log(error.message);
+    }
   }
 
   return (
@@ -167,6 +194,23 @@ export default function Component() {
               />
               <FormField
                 control={form.control}
+                name="password_check"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>비밀번호 확인</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="appletree"
+                        {...field}
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="club_id"
                 render={({ field }) => (
                   <FormItem>
@@ -213,7 +257,11 @@ export default function Component() {
                   </FormItem>
                 )}
               />
-
+              {errorMessage && (
+                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-md">
+                  {errorMessage}
+                </div>
+              )}
               <Button type="submit" className="w-full">
                 등록
               </Button>

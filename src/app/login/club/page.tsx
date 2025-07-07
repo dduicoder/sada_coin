@@ -12,7 +12,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import ClubForm from "@/components/login/ClubForm";
 
-export default function Component() {
+export default function ClubLoginPage() {
   return (
     <main>
       <Card className="mx-auto max-w-sm ">

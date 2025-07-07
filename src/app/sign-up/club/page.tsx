@@ -36,52 +36,74 @@ import { clubs, getClubNameById } from "@/constants/clubs";
 import { hashPassword } from "@/lib/auth-utils";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 
-const formSchema = z.object({
-  id: z.string().min(1, "동아리를 선택해주세요"),
-  password: z
-    .string()
-    .min(6, "비밀번호는 최소 여섯 글자입니다.")
-    .max(50, "비밀번호는 최대 50글자입니다."),
-});
+const formSchema = z
+  .object({
+    id: z.string().min(1, "동아리를 선택해주세요"),
+    password: z
+      .string()
+      .min(6, "비밀번호는 최소 여섯 글자입니다.")
+      .max(50, "비밀번호는 최대 50글자입니다."),
+    password_check: z
+      .string()
+      .min(6, "비밀번호는 최소 여섯 글자입니다.")
+      .max(50, "비밀번호는 최대 50글자입니다."),
+  })
+  .refine((data) => data.password === data.password_check, {
+    message: "비밀번호가 맞지 않아요.",
+    path: ["password_check"],
+  });
 
-export default function Component() {
+export default function ClubSignUpPage() {
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: "",
       password: "",
+      password_check: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const id = values.id;
-    const password = values.password;
     const name = getClubNameById(id);
+    const password = await hashPassword(values.password);
+
+    setErrorMessage("");
 
     if (!name) {
-      alert("동아리를 찾을 수 없습니다.");
+      setErrorMessage("동아리를 찾을 수 없습니다.");
       return;
     }
 
-    fetch("http://127.0.0.1:5000/clubs", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id,
-        name,
-        password: await hashPassword(password),
-      }),
-    }).then(async (response) => {
-      if (response.ok) {
-        alert("가입이 완료되었습니다!");
-        form.reset();
-      } else {
-        console.log(await response.json());
-      }
-    });
+    try {
+      fetch("/api/sign-up/clubs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          name,
+          password,
+        }),
+      }).then(async (response) => {
+        if (response.ok) {
+          signIn("credentials", {
+            id,
+            password,
+            redirectTo: "/",
+          });
+        } else {
+          setErrorMessage("가입에 실패했습니다. 다시 시도해주세요.");
+        }
+      });
+    } catch (error) {
+      console.log("error");
+    }
   }
 
   return (
@@ -179,6 +201,28 @@ export default function Component() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="password_check"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>비밀번호 확인</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="appletree"
+                        {...field}
+                        type="password"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {errorMessage && (
+                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-md">
+                  {errorMessage}
+                </div>
+              )}
               <Button type="submit" className="w-full">
                 등록
               </Button>

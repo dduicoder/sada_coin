@@ -11,9 +11,11 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from "@/actions/auth";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { hashPassword } from "@/lib/auth-utils";
+import { AuthError } from "next-auth";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
@@ -35,18 +37,33 @@ const StudentForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setErrorMessage("");
     try {
-      const result = await login(values);
-      console.log(result);
-      if (result?.error) {
-        setErrorMessage(result.error.message || "로그인에 실패했습니다.");
-      } else if (result?.success) {
-        // Login successful, redirect will be handled by NextAuth
-        setErrorMessage("");
-        router.push("/user");
-        window.location.reload();
+      const res = await signIn("credentials", {
+        id: values.id,
+        password: await hashPassword(values.password),
+        redirect: false,
+      });
+
+      if (res?.error === "CredentialsSignin") {
+        console.log(res.error);
+        setErrorMessage("학번 또는 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      if (res?.error) {
+        setErrorMessage(res.error);
+      } else {
+        router.replace("/");
       }
     } catch (error) {
-      setErrorMessage("로그인 중 오류가 발생했습니다.");
+      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+        throw error;
+      }
+
+      if (error instanceof AuthError) {
+        console.error("AuthError:", error);
+      }
+
+      throw error;
     }
   }
 

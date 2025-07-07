@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import Balance from "@/components/user/Balance";
 import Ranking from "@/components/user/Ranking";
 
-const CoinRankingDashboard = () => {
+const UserPage = () => {
   const { data: session, status } = useSession();
 
   if (status !== "authenticated" || !session.user) {
@@ -25,12 +25,10 @@ const CoinRankingDashboard = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-slate-800 flex items-center justify-center gap-2">
+          <h1 className="text-4xl font-bold">
             {user.id} {user.name} 님
           </h1>
-          <p className="text-slate-600">
-            SADA에서 개발한 코인을 이용해 2025년 학술발표회를 즐겨보세요!
-          </p>
+          <p>SADA에서 개발한 코인을 이용해 2025년 학술발표회를 즐겨보세요!</p>
         </div>
 
         <Tabs defaultValue="wallet" className="w-full">
@@ -52,4 +50,4 @@ const CoinRankingDashboard = () => {
   );
 };
 
-export default CoinRankingDashboard;
+export default UserPage;

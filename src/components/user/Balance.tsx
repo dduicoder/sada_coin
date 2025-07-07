@@ -7,24 +7,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { NotebookPen, RefreshCw, Wallet, QrCode } from "lucide-react";
-import { User } from "@/../types";
+import { Transaction, User } from "@/../types";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useQRCode } from "next-qrcode";
-
-interface activity {
-  amount: number;
-  description: string;
-  sender_hash: string;
-  receiver_hash: string;
-  timestamp: string;
-}
 
 const Balance = ({ user }: { user: User }) => {
   const [balanceLoading, setBalanceLoading] = useState<boolean>(false);
   const [balance, setBalance] = useState<number>(0);
   const [activityLoading, setActivityLoading] = useState<boolean>(false);
-  const [activities, setActivities] = useState<activity[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const { Image } = useQRCode();
 
@@ -36,6 +28,11 @@ const Balance = ({ user }: { user: User }) => {
       maximumFractionDigits: price < 1 ? 6 : 2,
     }).format(price);
   };
+
+  async function fetchNew() {
+    fetchBalance();
+    fetchAcitivies();
+  }
 
   async function fetchBalance() {
     setBalanceLoading(true);
@@ -51,13 +48,12 @@ const Balance = ({ user }: { user: User }) => {
     const response = await fetch(`/api/user-transactions?hash=${user.hash}`);
     const json = await response.json();
 
-    setActivities(json);
+    setTransactions(json);
     setActivityLoading(false);
   }
 
   useEffect(() => {
-    fetchBalance();
-    fetchAcitivies();
+    fetchNew();
   }, [user.id, user.hash]);
 
   return (
@@ -67,12 +63,7 @@ const Balance = ({ user }: { user: User }) => {
           <CardTitle className="flex items-center gap-2">
             <Wallet className="w-5 h-5" />내 계좌
           </CardTitle>
-          <CardDescription>
-            <div className="flex-col items-start gap-2">
-              <div>ID: {user.id}</div>
-              <div>Hash: {user.hash}</div>
-            </div>
-          </CardDescription>
+          <CardDescription>ID: {user.id}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -85,7 +76,7 @@ const Balance = ({ user }: { user: User }) => {
                   </div>
                 </div>
 
-                <Button onClick={fetchBalance} disabled={balanceLoading}>
+                <Button onClick={fetchNew} disabled={balanceLoading}>
                   <RefreshCw className={balanceLoading ? "animate-spin" : ""} />
                 </Button>
               </div>
@@ -128,11 +119,7 @@ const Balance = ({ user }: { user: User }) => {
             <div className="flex items-center gap-2">
               <NotebookPen className="w-5 h-5" />내 활동
             </div>
-            <Button
-              onClick={fetchAcitivies}
-              disabled={activityLoading}
-              size="sm"
-            >
+            <Button onClick={fetchNew} disabled={activityLoading} size="sm">
               <RefreshCw className={activityLoading ? "animate-spin" : ""} />
             </Button>
           </CardTitle>
@@ -143,28 +130,27 @@ const Balance = ({ user }: { user: User }) => {
             <div className="text-center text-gray-500">
               활동 기록을 불러오는 중...
             </div>
-          ) : activities.length === 0 ? (
+          ) : transactions.length === 0 ? (
             <div className="text-center text-gray-500">
               활동 기록이 없습니다.
             </div>
           ) : (
             <div className="space-y-3">
-              {activities.map((activity, index) => {
-                const isOutgoing = activity.sender_hash === user.hash;
+              {transactions.map((transaction, index) => {
+                console.log(transaction);
+                const isOutgoing =
+                  transaction.transaction_type === "student_to_club";
                 return (
                   <div
                     key={index}
-                    className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                    className="flex justify-between items-center p-3 bg-secondary rounded-lg"
                   >
                     <div className="flex-1">
-                      <div className="font-medium">{activity.description}</div>
+                      <div className="font-medium">{transaction.title}</div>
                       <div className="text-sm text-gray-500">
-                        {new Date(activity.timestamp).toLocaleString("ko-KR")}
-                      </div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        {isOutgoing
-                          ? `보낸 곳: ${activity.receiver_hash}`
-                          : `받은 곳: ${activity.sender_hash}`}
+                        {new Date(transaction.timestamp).toLocaleString(
+                          "ko-KR"
+                        )}
                       </div>
                     </div>
                     <div
@@ -173,7 +159,7 @@ const Balance = ({ user }: { user: User }) => {
                       }`}
                     >
                       {isOutgoing ? "-" : "+"}
-                      {formatPrice(Math.abs(activity.amount))}
+                      {formatPrice(Math.abs(transaction.amount))}
                     </div>
                   </div>
                 );

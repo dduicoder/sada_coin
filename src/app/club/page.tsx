@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Scan } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { QRScanner, PaymentForm, InstructionsCard } from "@/components/club";
+import { QRScanner, InstructionsCard, ActivityCRUD } from "@/components/club";
 
-const QRScannerPage: React.FC = () => {
+const ClubPage = () => {
   const { data: session, status } = useSession();
   const [userHash, setUserHash] = useState<string>("");
 
@@ -23,11 +23,13 @@ const QRScannerPage: React.FC = () => {
     <main className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold text-slate-800 flex items-center justify-center gap-2">
+        <h1 className="text-4xl font-bold flex items-center justify-center gap-2">
           <Scan className="text-indigo-600" />
           QR 스캐너
         </h1>
-        <p className="text-slate-600">QR 코드를 스캔하여 결제를 처리하세요</p>
+        <p className="text-slate-600 dark:text-gray-400">
+          QR 코드를 스캔하여 결제를 처리하세요
+        </p>
       </div>
 
       <div className="grid lg:grid-cols-1 gap-6">
@@ -38,10 +40,10 @@ const QRScannerPage: React.FC = () => {
         <QRScanner onScanResult={setUserHash} />
 
         {/* Payment Processing Section */}
-        <PaymentForm userHash={userHash} />
+        <ActivityCRUD userHash={userHash} />
       </div>
     </main>
   );
 };
 
-export default QRScannerPage;
+export default ClubPage;

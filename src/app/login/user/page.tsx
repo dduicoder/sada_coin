@@ -12,7 +12,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import StudentForm from "@/components/login/StudentForm";
 
-export default function Component() {
+export default function UserLoginPage() {
   return (
     <main>
       <Card className="mx-auto max-w-sm ">

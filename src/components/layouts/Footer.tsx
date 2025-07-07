@@ -6,7 +6,7 @@ const Footer: FC = () => {
       <div className="mx-auto w-full max-w-2xl grid gap-4 grid-cols-1 md:grid-cols-2">
         <div>
           <span className="font-bold text-white text-base mb-2 block">
-            FRONT
+            FRONTEND
           </span>
           <span className="block text-gray-300 text-sm">2503 박시진</span>
           <span className="block text-gray-300 text-sm">
@@ -18,15 +18,13 @@ const Footer: FC = () => {
         </div>
         <div>
           <span className="font-bold text-white text-base mb-2 block">
-            BACK
+            BACKEND
           </span>
           <span className="block text-gray-300 text-sm">2109 박현</span>
           <span className="block text-gray-300 text-sm">
             School: gbs.s240090@ggh.goe.go.kr
           </span>
-          <span className="block text-gray-300 text-sm">
-            Personal: sijinpark77@gmail.com
-          </span>
+          <span className="block text-gray-300 text-sm">Personal:</span>
         </div>
       </div>
       <p className="text-sm text-gray-400 mt-6 text-center">

@@ -12,11 +12,11 @@ declare module "next-auth" {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
+  // trustHost: true,
   session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-  },
+  // pages: {
+  //   signIn: "/login",
+  // },
   providers: [
     Credentials({
       name: "credentials",
@@ -25,21 +25,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(creds) {
-        // throw new Error("foobar");
-        try {
-          const res = await axios.post(
-            `${process.env.BACKEND_URL}/login` || "",
-            creds
-          );
+        const res = await axios.post(`${process.env.BACKEND_URL}/login`, creds);
 
-          if (res.data) {
-            return res.data;
+        if (res.data) {
+          const data = res.data;
+          if (data["message"]) {
+            throw new Error(data["message"]);
+          } else {
+            return data;
           }
-        } catch (error) {
-          // Re-throw the error to be handled by the login action
-          throw new Error("error.response.data.message");
-
-          // throw new Error("error.response.data.message");
+        } else {
+          return null;
         }
       },
     }),
@@ -64,4 +60,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthConfig);
