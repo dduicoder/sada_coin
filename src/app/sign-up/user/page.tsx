@@ -32,12 +32,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { clubs, getClubNameById } from "@/constants/clubs";
+import { clubs } from "@/constants/clubs";
 import { hashPassword } from "@/lib/auth-utils";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -66,6 +67,7 @@ const formSchema = z
   });
 
 export default function UserSignUpPage() {
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -100,19 +102,21 @@ export default function UserSignUpPage() {
         }),
       });
 
-      // .then((response) => {
       if (response.ok) {
         signIn("credentials", {
           id,
           password,
-          redirectTo: "/",
+          redirect: false,
         });
+        router.replace("/user");
       } else {
-        setErrorMessage("가입에 실패했습니다. 다시 시도해주세요.");
+        const json = await response.json();
+        setErrorMessage(
+          json["message"] || "가입에 실패했습니다. 다시 시도해주세요."
+        );
       }
-      // });
-    } catch (error: any) {
-      console.log(error.message);
+    } catch (error) {
+      console.log("error");
     }
   }
 

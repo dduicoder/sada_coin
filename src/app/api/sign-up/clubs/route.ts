@@ -14,7 +14,7 @@ export async function POST(request: Request) {
   const resData = await response.json();
 
   if (!response.ok) {
-    throw new Error(resData.message || "Could not fetch.");
+    return NextResponse.json({ message: resData.message }, { status: 400 });
   }
 
   return NextResponse.json(resData);

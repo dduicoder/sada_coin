@@ -1,4 +1,4 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+import NextAuth, { AuthError, type NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import axios from "axios";
 
@@ -11,12 +11,15 @@ declare module "next-auth" {
   }
 }
 
+class customError extends AuthError {
+  constructor(message: string) {
+    super();
+    this.message = message;
+  }
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // trustHost: true,
   session: { strategy: "jwt" },
-  // pages: {
-  //   signIn: "/login",
-  // },
   providers: [
     Credentials({
       name: "credentials",
@@ -30,7 +33,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (res.data) {
           const data = res.data;
           if (data["message"]) {
-            throw new Error(data["message"]);
+            throw new customError(data["message"]);
           } else {
             return data;
           }

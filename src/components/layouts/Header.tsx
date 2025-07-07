@@ -13,13 +13,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 const Header: FC = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const { setTheme } = useTheme();
 
   return (
-    <header className="fixed top-0 w-full h-16 px-[10%] flex items-center justify-between bg-opacity-50 backdrop-saturate-200 backdrop-blur-sm z-50">
+    <header className="fixed top-0 w-full h-16 px-4 flex items-center justify-between bg-opacity-50 backdrop-saturate-200 backdrop-blur-sm z-50">
       <Link href="/">
         <span className="font-bold text-2xl italic hover:underline">
           SADA COIN
@@ -33,7 +35,8 @@ const Header: FC = () => {
             </Link>
             <Button
               onClick={() => {
-                signOut({ redirectTo: "/" });
+                signOut({ redirect: false });
+                router.replace("/");
               }}
             >
               로그아웃

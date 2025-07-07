@@ -40,7 +40,7 @@ export default function UserLoginPage() {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <StudentForm />{" "}
+          <StudentForm />
         </CardContent>
       </Card>
     </main>

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   // TODO: Update metadata
   // FIXME:
   title: "SADA COIN",
-  description: "경기북과학고등학교 2025년 학술발표회 공식 코인입니다!",
+  description: "경기북과학고등학교 2025년 학술발표회 코인입니다!",
 };
 
 const pretendard = localFont({

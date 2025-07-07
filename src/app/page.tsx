@@ -2,7 +2,14 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardAction } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardAction,
+} from "@/components/ui/card";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -15,7 +22,9 @@ export default function Home() {
             <CardTitle className="text-2xl">환영합니다!</CardTitle>
             <CardAction>
               <Button asChild>
-                <Link href={session.user.type === "student" ? "/user" : "/club"}>
+                <Link
+                  href={session.user.type === "student" ? "/user" : "/club"}
+                >
                   내 페이지
                 </Link>
               </Button>
@@ -38,7 +47,9 @@ export default function Home() {
         <Card className="mb-8">
           <CardContent className="text-center">
             <CardTitle className="text-2xl mb-4">SADA 코인 시스템</CardTitle>
-            <CardDescription className="mb-6">로그인하여 코인 시스템을 이용해보세요</CardDescription>
+            <CardDescription className="mb-6">
+              로그인하여 코인 시스템을 이용해보세요
+            </CardDescription>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild>
                 <Link href="/login/user">로그인하기</Link>
@@ -51,15 +62,20 @@ export default function Home() {
         </Card>
       )}
       <div className="space-y-8">
-        <Card>
+        <Card className="gap-2">
           <CardHeader>
-            <CardTitle className="text-2xl">SADA 코인 시스템</CardTitle>
+            <CardTitle className="text-2xl flex justify-between align-center">
+              <div>SADA 코인 시스템</div>
+              <Link href={"/ranking"}>
+                <Button>랭킹 보기</Button>
+              </Link>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="leading-relaxed">
-              이 코인은 경기북과학고등학교의 학생들이 개발하였으며, 2025년
-              학술발표회에서 사용됩니다. 다양한 활동에 참여하고 코인을 획득하거나
-              사용할 수 있습니다.
+              이 코인은 경기북과학고등학교의 정보 동아리 SADA에서 개발하였으며,
+              2025년 학술발표회에서 사용됩니다. 다양한 활동에 참여하고 코인을
+              획득하거나 사용할 수 있습니다.
             </p>
           </CardContent>
         </Card>
@@ -141,7 +157,9 @@ export default function Home() {
           <CardContent>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold mb-3">코인 획득 (동아리 → 학생)</h4>
+                <h4 className="font-semibold mb-3">
+                  코인 획득 (동아리 → 학생)
+                </h4>
                 <ul className="space-y-2">
                   <li>• 부스 방문 보상</li>
                   <li>• 게임 참여 보상</li>
@@ -150,7 +168,9 @@ export default function Home() {
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-3">코인 사용 (학생 → 동아리)</h4>
+                <h4 className="font-semibold mb-3">
+                  코인 사용 (학생 → 동아리)
+                </h4>
                 <ul className="space-y-2">
                   <li>• 상품 구매</li>
                   <li>• 게임 참여비</li>

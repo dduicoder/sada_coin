@@ -1,13 +1,13 @@
-import { TabsContent } from "@/components/ui/tabs";
+"use client";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "./ui/card";
 import { RefreshCw, Trophy } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 import {
   Table,
   TableBody,
@@ -15,14 +15,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "./ui/table";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { clubs } from "@/constants/clubs";
 
 interface UserBalance {
   balance: number;
   club_id: string;
-  club_name: string;
   id: string;
   name: string;
 }
@@ -32,6 +32,16 @@ interface ClubBalance {
   id: string;
   name: string;
 }
+
+export const getClubNameById = (id: string): string => {
+  for (const subject of clubs) {
+    const club = subject.clubs_list.find((c) => c.id === id);
+    if (club) {
+      return club.name;
+    }
+  }
+  return "";
+};
 
 const Ranking = () => {
   const [userLoading, setUserLoading] = useState(false);
@@ -75,8 +85,8 @@ const Ranking = () => {
   }, []);
 
   return (
-    <TabsContent value="rankings" className="space-y-4">
-      <Card className="gap-2">
+    <>
+      <Card className="gap-2 mb-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="w-5 h-5" />
@@ -115,12 +125,12 @@ const Ranking = () => {
                     <TableCell>
                       <Image
                         src={`/clubs/${user.club_id}.png`}
-                        alt={user.club_name}
+                        alt={getClubNameById(user.club_id)}
                         width={16}
                         height={16}
                         className="inline-block mr-2"
                       />
-                      {user.club_name}
+                      {getClubNameById(user.club_id)}
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       {user.balance}
@@ -136,7 +146,7 @@ const Ranking = () => {
           )}
         </CardContent>
       </Card>
-      <Card className="gap-2">
+      <Card className="gap-2 mb-4">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="w-5 h-5" />
@@ -192,7 +202,7 @@ const Ranking = () => {
           )}
         </CardContent>
       </Card>
-    </TabsContent>
+    </>
   );
 };
 

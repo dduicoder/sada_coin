@@ -13,10 +13,11 @@ import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { hashPassword } from "@/lib/auth-utils";
-import { AuthError } from "next-auth";
 import { useRouter } from "next/navigation";
+// import { login } from "@/lib/actions";
+import { hashPassword } from "@/lib/auth-utils";
+import { signIn, useSession } from "next-auth/react";
+import { login } from "@/lib/actions";
 
 const formSchema = z.object({
   id: z.string().regex(/^\d+$/, "학번은 숫자만 입력 가능합니다."),
@@ -24,6 +25,7 @@ const formSchema = z.object({
 });
 
 const StudentForm = () => {
+  const { update } = useSession();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,33 +39,21 @@ const StudentForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setErrorMessage("");
     try {
-      const res = await signIn("credentials", {
+      const res = await login({
         id: values.id,
         password: await hashPassword(values.password),
-        redirect: false,
       });
 
-      if (res?.error === "CredentialsSignin") {
-        console.log(res.error);
-        setErrorMessage("학번 또는 비밀번호가 일치하지 않습니다.");
-        return;
+      if (res.message === "login successful") {
+        router.replace("/user");
+        update();
       }
 
-      if (res?.error) {
-        setErrorMessage(res.error);
-      } else {
-        router.replace("/");
+      if (res.error) {
+        setErrorMessage(res.error?.message);
       }
-    } catch (error) {
-      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-        throw error;
-      }
-
-      if (error instanceof AuthError) {
-        console.error("AuthError:", error);
-      }
-
-      throw error;
+    } catch (error: any) {
+      setErrorMessage(`로그인에 실패했습니다:${error.message}`);
     }
   }
 

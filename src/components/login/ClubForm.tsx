@@ -24,9 +24,10 @@ import Image from "next/image";
 import { clubs } from "@/constants/clubs";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { hashPassword } from "@/lib/auth-utils";
 import { AuthError } from "next-auth";
+import { login } from "@/lib/actions";
 
 const formSchema = z.object({
   id: z.string().min(1, "동아리를 선택해 주세요."),
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 const ClubForm = () => {
+  const { update } = useSession();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const router = useRouter();
 
@@ -48,33 +50,21 @@ const ClubForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setErrorMessage("");
     try {
-      const res = await signIn("credentials", {
+      const res = await login({
         id: values.id,
         password: await hashPassword(values.password),
-        redirect: false,
       });
 
-      if (res?.error === "CredentialsSignin") {
-        console.log(res.error);
-        setErrorMessage("학번 또는 비밀번호가 일치하지 않습니다.");
-        return;
+      if (res.message === "login successful") {
+        router.replace("/club");
+        update();
       }
 
-      if (res?.error) {
-        setErrorMessage(res.error);
-      } else {
-        router.replace("/");
+      if (res.error) {
+        setErrorMessage(res.error?.message);
       }
-    } catch (error) {
-      if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-        throw error;
-      }
-
-      if (error instanceof AuthError) {
-        console.error("AuthError:", error);
-      }
-
-      throw error;
+    } catch (error: any) {
+      setErrorMessage(`로그인에 실패했습니다:${error.message}`);
     }
   }
 

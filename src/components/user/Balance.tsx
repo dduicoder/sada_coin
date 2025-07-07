@@ -57,7 +57,7 @@ const Balance = ({ user }: { user: User }) => {
   }, [user.id, user.hash]);
 
   return (
-    <TabsContent value="wallet" className="space-y-4">
+    <>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const Balance = ({ user }: { user: User }) => {
           )}
         </CardContent>
       </Card>
-    </TabsContent>
+    </>
   );
 };
 export default Balance;

@@ -1,11 +1,7 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { Wallet, Trophy } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Balance from "@/components/user/Balance";
-import Ranking from "@/components/user/Ranking";
 
 const UserPage = () => {
   const { data: session, status } = useSession();
@@ -31,20 +27,7 @@ const UserPage = () => {
           <p>SADA에서 개발한 코인을 이용해 2025년 학술발표회를 즐겨보세요!</p>
         </div>
 
-        <Tabs defaultValue="wallet" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 h-16">
-            <TabsTrigger value="wallet" className="flex items-center gap-2">
-              <Wallet className="w-4 h-4" />내 계좌
-            </TabsTrigger>
-            <TabsTrigger value="rankings" className="flex items-center gap-2">
-              <Trophy className="w-4 h-4" />
-              랭킹
-            </TabsTrigger>
-          </TabsList>
-
-          <Balance user={user} />
-          <Ranking />
-        </Tabs>
+        <Balance user={user} />
       </div>
     </main>
   );

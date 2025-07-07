@@ -38,6 +38,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -57,6 +58,7 @@ const formSchema = z
   });
 
 export default function ClubSignUpPage() {
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,7 +82,7 @@ export default function ClubSignUpPage() {
     }
 
     try {
-      fetch("/api/sign-up/clubs", {
+      const response = await fetch("/api/sign-up/clubs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,17 +92,21 @@ export default function ClubSignUpPage() {
           name,
           password,
         }),
-      }).then(async (response) => {
-        if (response.ok) {
-          signIn("credentials", {
-            id,
-            password,
-            redirectTo: "/",
-          });
-        } else {
-          setErrorMessage("가입에 실패했습니다. 다시 시도해주세요.");
-        }
       });
+
+      if (response.ok) {
+        signIn("credentials", {
+          id,
+          password,
+          redirect: false,
+        });
+        router.replace("/club");
+      } else {
+        const json = await response.json();
+        setErrorMessage(
+          json["message"] || "가입에 실패했습니다. 다시 시도해주세요."
+        );
+      }
     } catch (error) {
       console.log("error");
     }
@@ -108,7 +114,7 @@ export default function ClubSignUpPage() {
 
   return (
     <main>
-      <Card className="mx-auto max-w-sm ">
+      <Card className="mx-auto max-w-sm">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">동아리 등록</CardTitle>
           <CardDescription>
