@@ -14,9 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { login } from "@/lib/actions";
 import { hashPassword } from "@/lib/auth-utils";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { login } from "@/lib/actions";
 
 const formSchema = z.object({

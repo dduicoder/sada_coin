@@ -24,9 +24,8 @@ import Image from "next/image";
 import { clubs } from "@/constants/clubs";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { hashPassword } from "@/lib/auth-utils";
-import { AuthError } from "next-auth";
 import { login } from "@/lib/actions";
 
 const formSchema = z.object({

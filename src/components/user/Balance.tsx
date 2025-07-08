@@ -1,4 +1,3 @@
-import { TabsContent } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
