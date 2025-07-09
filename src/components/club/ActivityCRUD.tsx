@@ -7,13 +7,18 @@ import { ActivityManagement } from "./ActivityManagement";
 import { PaymentProcessor } from "./PaymentProcessor";
 
 interface ActivityCRUDProps {
-  userHash?: string;
+  player?: {
+    name: string;
+    hash: string;
+  };
 }
 
-export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ userHash }) => {
+export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ player }) => {
   const { data: session, status } = useSession();
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -27,7 +32,9 @@ export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ userHash }) => {
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/activities?club_id=${session.user.id}`);
+      const response = await fetch(
+        `/api/activities?club_id=${session.user.id}`
+      );
       if (response.ok) {
         const data = await response.json();
         setActivities(data);
@@ -65,10 +72,10 @@ export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ userHash }) => {
         onActivitySelect={handleActivitySelect}
         onActivitiesUpdate={fetchActivities}
       />
-      
-      {userHash && (
+
+      {player && (
         <PaymentProcessor
-          userHash={userHash}
+          player={player}
           selectedActivity={selectedActivity}
           onPaymentComplete={handlePaymentComplete}
         />

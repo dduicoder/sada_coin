@@ -27,18 +27,6 @@ export const QRCamera: React.FC<QRCameraProps> = ({
     "granted" | "denied" | "prompt"
   >("prompt");
 
-  // Extract user hash from QR code data
-  const extractUserHash = (qrData: string): string | null => {
-    try {
-      // Expected format: "crypto_wallet_[hash]"
-      const match = qrData.match(/crypto_wallet_([a-f0-9]+)/i);
-      return match ? match[1] : null;
-    } catch (error) {
-      console.error("Error extracting hash:", error);
-      return null;
-    }
-  };
-
   // Real QR code detection using jsQR
   const detectQRCode = (canvas: HTMLCanvasElement): string | null => {
     const ctx = canvas.getContext("2d");

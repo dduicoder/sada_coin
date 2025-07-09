@@ -24,6 +24,11 @@ import {
 import { Activity } from "@/../types";
 import { ServerResponseAlert } from "./ServerResponseAlert";
 
+interface Player {
+  name: string;
+  hash: string;
+}
+
 interface PaymentRequest {
   sender_hash: string;
   receiver_hash: string;
@@ -39,21 +44,25 @@ interface ServerResponse {
 }
 
 interface PaymentProcessorProps {
-  userHash?: string;
+  player?: Player;
   selectedActivity: Activity | null;
   onPaymentComplete: () => void;
 }
 
 export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
-  userHash,
+  player,
   selectedActivity,
   onPaymentComplete,
 }) => {
   const { data: session } = useSession();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
+  const [serverResponse, setServerResponse] = useState<ServerResponse | null>(
+    null
+  );
 
-  const sendToServer = async (paymentData: PaymentRequest): Promise<ServerResponse> => {
+  const sendToServer = async (
+    paymentData: PaymentRequest
+  ): Promise<ServerResponse> => {
     try {
       const response = await fetch("/api/transfer", {
         method: "POST",
@@ -88,7 +97,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
   };
 
   const processPayment = async () => {
-    if (!userHash || !selectedActivity || !session?.user) {
+    if (!player || !selectedActivity || !session?.user) {
       setServerResponse({
         success: false,
         message: "활동을 선택하고 유저를 스캔해 주세요.",
@@ -116,9 +125,9 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
 
       if (selectedActivity?.type === "club_to_student") {
         sender_hash = clubHash;
-        receiver_hash = userHash;
+        receiver_hash = player.hash;
       } else {
-        sender_hash = userHash;
+        sender_hash = player.hash;
         receiver_hash = clubHash;
       }
 
@@ -145,7 +154,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
     }
   };
 
-  if (!userHash) {
+  if (!player) {
     return (
       <Card className="mt-6">
         <CardHeader>
@@ -153,7 +162,9 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
             <CreditCard className="w-5 h-5" />
             결제 처리
           </CardTitle>
-          <CardDescription>QR 코드를 스캔하여 사용자를 선택해주세요</CardDescription>
+          <CardDescription>
+            QR 코드를 스캔하여 사용자를 선택해주세요
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert>
@@ -177,9 +188,11 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
         <CardDescription>활동을 선택하고 결제를 처리하세요</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {selectedActivity && userHash && session?.user && (
+        {selectedActivity && player && session?.user && (
           <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">결제 미리보기</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              결제 미리보기
+            </h3>
 
             {/* Payment Direction */}
             <div className="flex items-center justify-center mb-4">
@@ -194,14 +207,18 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                   <ArrowRight className="w-6 h-6 text-green-600" />
                   <div className="flex items-center gap-2 px-3 py-2 bg-green-100 rounded-lg">
                     <User className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">{userHash}</span>
+                    <span className="text-sm font-medium text-green-800">
+                      {player.name}
+                    </span>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 px-3 py-2 bg-orange-100 rounded-lg">
                     <User className="w-4 h-4 text-orange-600" />
-                    <span className="text-sm font-medium text-orange-800">{userHash}</span>
+                    <span className="text-sm font-medium text-orange-800">
+                      {player.name}
+                    </span>
                   </div>
                   <ArrowRight className="w-6 h-6 text-red-600" />
                   <div className="flex items-center gap-2 px-3 py-2 bg-red-100 rounded-lg">
@@ -218,7 +235,9 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">활동명:</span>
-                <span className="text-sm font-medium">{selectedActivity.title}</span>
+                <span className="text-sm font-medium">
+                  {selectedActivity.title}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">금액:</span>
@@ -236,11 +255,15 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
                 <span className="text-sm text-gray-600">분류:</span>
                 <Badge
                   variant={
-                    selectedActivity.type === "club_to_student" ? "default" : "secondary"
+                    selectedActivity.type === "club_to_student"
+                      ? "default"
+                      : "secondary"
                   }
                   className="text-xs"
                 >
-                  {selectedActivity.type === "club_to_student" ? "코인 획득" : "코인 사용"}
+                  {selectedActivity.type === "club_to_student"
+                    ? "코인 획득"
+                    : "코인 사용"}
                 </Badge>
               </div>
             </div>
@@ -250,7 +273,7 @@ export const PaymentProcessor: React.FC<PaymentProcessorProps> = ({
         {/* Payment Button */}
         <Button
           onClick={processPayment}
-          disabled={!userHash || !selectedActivity || isProcessing}
+          disabled={!player || !selectedActivity || isProcessing}
           className="w-full"
           size="lg"
         >

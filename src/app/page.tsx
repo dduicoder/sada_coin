@@ -75,7 +75,7 @@ export default function Home() {
             <p className="leading-relaxed">
               이 코인은 경기북과학고등학교의 정보 동아리 SADA에서 개발하였으며,
               2025년 학술발표회에서 사용됩니다. 다양한 활동에 참여하고 코인을
-              획득하거나 사용할 수 있습니다.
+              획득하거나 사용하면서 학술 발표회를 즐겨 보세요!
             </p>
           </CardContent>
         </Card>

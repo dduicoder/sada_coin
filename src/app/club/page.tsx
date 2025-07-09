@@ -5,9 +5,19 @@ import { Scan } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { QRScanner, InstructionsCard, ActivityCRUD } from "@/components/club";
 
+interface Player {
+  name: string;
+  hash: string;
+}
+
 const ClubPage = () => {
   const { data: session, status } = useSession();
-  const [userHash, setUserHash] = useState<string>("");
+  const [player, setPlayer] = useState<Player>();
+
+  const scanHandler = (text: string) => {
+    console.log(JSON.parse(text));
+    setPlayer(JSON.parse(text));
+  };
 
   if (status !== "authenticated" || !session.user) {
     return <main>접근이 허용되지 않았습니다.</main>;
@@ -37,10 +47,10 @@ const ClubPage = () => {
         <InstructionsCard />
 
         {/* Scanner Section */}
-        <QRScanner onScanResult={setUserHash} />
+        <QRScanner onScanResult={scanHandler} />
 
         {/* Payment Processing Section */}
-        <ActivityCRUD userHash={userHash} />
+        <ActivityCRUD player={player} />
       </div>
     </main>
   );

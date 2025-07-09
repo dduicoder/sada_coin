@@ -96,7 +96,10 @@ const Balance = ({ user }: { user: User }) => {
         </CardHeader>
         <CardContent className="flex justify-center">
           <Image
-            text={user.hash}
+            text={JSON.stringify({
+              hash: user.hash,
+              name: `${user.id} ${user.name}`,
+            })}
             options={{
               type: "image/jpeg",
               quality: 1,
