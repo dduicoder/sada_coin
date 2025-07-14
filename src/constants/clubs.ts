@@ -2,53 +2,53 @@ export const clubs = [
   {
     subject: "수학",
     clubs_list: [
-      { id: "rootm", name: "루트엠" },
-      { id: "naplace", name: "나플라스" },
-      { id: "limes", name: "리메스" },
-      { id: "laonzena", name: "라온제나" },
+      { id: "rootm", name: "RootM" },
+      { id: "naplace", name: "NA'PLACE" },
+      { id: "limes", name: "Limes" },
+      { id: "laonzena", name: "LAONZENA" },
     ],
   },
   {
     subject: "물리",
     clubs_list: [
-      { id: "andamiro", name: "안다미로" },
-      { id: "tips", name: "팁스" },
-      { id: "neo", name: "네오" },
+      { id: "andamiro", name: "Andamiro" },
+      { id: "tips", name: "TIPS" },
+      { id: "neo", name: "NEO" },
     ],
   },
   {
     subject: "화학",
     clubs_list: [
-      { id: "chex", name: "첵스" },
+      { id: "chex", name: "CHEX" },
       { id: "eq", name: "EQ" },
-      { id: "edta", name: "에타" },
+      { id: "edta", name: "EDTA" },
     ],
   },
   {
     subject: "생명",
     clubs_list: [
       { id: "dna", name: "DNA" },
-      { id: "invitro", name: "인비트로" },
-      { id: "globe", name: "글로브" },
+      { id: "invitro", name: "In vitro" },
+      { id: "globe", name: "GLOBE" },
     ],
   },
   {
     subject: "지구",
     clubs_list: [
-      { id: "archi", name: "아르키" },
-      { id: "pulcherrima", name: "풀체리마" },
+      { id: "archi", name: "Archi" },
+      { id: "pulcherrima", name: "Pullcherima" },
     ],
   },
   {
     subject: "정보",
     clubs_list: [
       { id: "sada", name: "SADA" },
-      { id: "next", name: "NeXT" },
+      { id: "next", name: "NEXT" },
     ],
   },
   {
     subject: "융합과학",
-    clubs_list: [{ id: "unrevr", name: "언리버" }],
+    clubs_list: [{ id: "unrevr", name: "UNREVR" }],
   },
 ];
 

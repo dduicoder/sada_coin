@@ -19,7 +19,6 @@ export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ player }) => {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
     null
   );
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (session?.user?.id) {
@@ -30,7 +29,6 @@ export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ player }) => {
   const fetchActivities = async () => {
     if (!session?.user?.id) return;
 
-    setLoading(true);
     try {
       const response = await fetch(
         `/api/activities?club_id=${session.user.id}`
@@ -43,8 +41,6 @@ export const ActivityCRUD: React.FC<ActivityCRUDProps> = ({ player }) => {
       }
     } catch (error) {
       console.error("Error fetching activities:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

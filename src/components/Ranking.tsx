@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { clubs } from "@/constants/clubs";
@@ -48,8 +49,9 @@ const Ranking = () => {
   const [clubLoading, setClubLoading] = useState(false);
   const [userRanking, setUserRanking] = useState<UserBalance[]>([]);
   const [clubRanking, setClubRanking] = useState<ClubBalance[]>([]);
-  const [userLastUpdate, setUserLastUpdate] = useState<Date>(new Date());
-  const [clubLastUpdate, setClubLastUpdate] = useState<Date>(new Date());
+  const [userLastUpdate, setUserLastUpdate] = useState<Date | null>(null);
+  const [clubLastUpdate, setClubLastUpdate] = useState<Date | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   async function fetchAndSetUser() {
     setUserLoading(true);
@@ -79,6 +81,15 @@ const Ranking = () => {
     );
   };
 
+  const filteredUserRanking = userRanking.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.id.includes(searchTerm) ||
+      getClubNameById(user.club_id)
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     fetchAndSetUser();
     fetchAndSetClubs();
@@ -93,55 +104,67 @@ const Ranking = () => {
             유저 코인 랭킹
           </CardTitle>
           <CardDescription className="flex justify-between items-center">
-            {formatDate(userLastUpdate)} 기준
-            <Button
-              onClick={fetchAndSetUser}
-              disabled={userLoading}
-              variant="outline"
-            >
-              <RefreshCw
-                className={`w-4 h-4 mr-2 ${userLoading ? "animate-spin" : ""}`}
+            {userLastUpdate && formatDate(userLastUpdate)} 기준
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="이름, 학번, 동아리로 검색..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-48"
               />
-              새로고침
-            </Button>
+              <Button
+                onClick={fetchAndSetUser}
+                disabled={userLoading}
+                variant="outline"
+              >
+                <RefreshCw
+                  className={`w-4 h-4 mr-2 ${
+                    userLoading ? "animate-spin" : ""
+                  }`}
+                />
+                새로고침
+              </Button>
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {userRanking && userRanking.length !== 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">학번</TableHead>
-                  <TableHead>이름</TableHead>
-                  <TableHead>동아리</TableHead>
-                  <TableHead className="text-right">보유 코인</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {userRanking.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell>
-                      <Image
-                        src={`/clubs/${user.club_id}.png`}
-                        alt={getClubNameById(user.club_id)}
-                        width={16}
-                        height={16}
-                        className="inline-block mr-2"
-                      />
-                      {getClubNameById(user.club_id)}
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      {user.balance}
-                    </TableCell>
+          {filteredUserRanking && filteredUserRanking.length !== 0 ? (
+            <div className="max-h-96 overflow-y-auto">
+              <Table>
+                <TableHeader className="sticky top-0 bg-background z-10">
+                  <TableRow>
+                    <TableHead className="w-[100px]">학번</TableHead>
+                    <TableHead>이름</TableHead>
+                    <TableHead>동아리</TableHead>
+                    <TableHead className="text-right">보유 코인</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredUserRanking.map((user, i) => (
+                    <TableRow key={i}>
+                      <TableCell>{user.id}</TableCell>
+                      <TableCell className="font-medium">{user.name}</TableCell>
+                      <TableCell>
+                        <Image
+                          src={`/clubs/${user.club_id}.png`}
+                          alt={getClubNameById(user.club_id)}
+                          width={16}
+                          height={16}
+                          className="inline-block mr-2"
+                        />
+                        {getClubNameById(user.club_id)}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {user.balance}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="text-center text-gray-500">
-              랭킹 정보가 없습니다.
+              {searchTerm ? "검색 결과가 없습니다." : "랭킹 정보가 없습니다."}
             </div>
           )}
         </CardContent>
@@ -153,7 +176,7 @@ const Ranking = () => {
             동아리 코인 랭킹
           </CardTitle>
           <CardDescription className="flex justify-between items-center">
-            {formatDate(clubLastUpdate)} 기준
+            {clubLastUpdate && formatDate(clubLastUpdate)} 기준
             <Button
               onClick={fetchAndSetClubs}
               disabled={clubLoading}
@@ -168,33 +191,35 @@ const Ranking = () => {
         </CardHeader>
         <CardContent>
           {clubRanking && clubRanking.length !== 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">동아리</TableHead>
-                  <TableHead className="text-right">보유 코인</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clubRanking.map((club) => (
-                  <TableRow key={club.id}>
-                    <TableCell>
-                      <Image
-                        src={`/clubs/${club.id}.png`}
-                        alt={club.name}
-                        width={16}
-                        height={16}
-                        className="inline-block mr-2"
-                      />
-                      {club.name}
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      {club.balance}
-                    </TableCell>
+            <div className="max-h-96 overflow-y-auto">
+              <Table>
+                <TableHeader className="sticky top-0 bg-background z-10">
+                  <TableRow>
+                    <TableHead className="w-[100px]">동아리</TableHead>
+                    <TableHead className="text-right">보유 코인</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {clubRanking.map((club) => (
+                    <TableRow key={club.id}>
+                      <TableCell>
+                        <Image
+                          src={`/clubs/${club.id}.png`}
+                          alt={club.name}
+                          width={16}
+                          height={16}
+                          className="inline-block mr-2"
+                        />
+                        {club.name}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {club.balance}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="text-center text-gray-500">
               랭킹 정보가 없습니다.

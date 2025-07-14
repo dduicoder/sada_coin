@@ -24,7 +24,7 @@ const Header: FC = () => {
     <header className="fixed top-0 w-full h-16 px-4 flex items-center justify-between bg-opacity-50 backdrop-saturate-200 backdrop-blur-sm z-50">
       <Link href="/">
         <span className="font-bold text-2xl italic hover:underline">
-          SADA COIN
+          GBS COIN
         </span>
       </Link>
       <nav className="flex items-center gap-4">

@@ -1,5 +1,6 @@
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -10,6 +11,7 @@ import { Transaction, User } from "@/../types";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useQRCode } from "next-qrcode";
+import Link from "next/link";
 
 const Balance = ({ user }: { user: User }) => {
   const [balanceLoading, setBalanceLoading] = useState<boolean>(false);
@@ -62,6 +64,11 @@ const Balance = ({ user }: { user: User }) => {
           <CardTitle className="flex items-center gap-2">
             <Wallet className="w-5 h-5" />내 계좌
           </CardTitle>
+          <CardAction>
+            <Button>
+              <Link href={"/ranking"}>코인 랭킹</Link>
+            </Button>
+          </CardAction>
           <CardDescription>ID: {user.id}</CardDescription>
         </CardHeader>
         <CardContent>

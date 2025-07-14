@@ -86,7 +86,10 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
-  const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
+  const [serverResponse, setServerResponse] = useState<ServerResponse | null>(
+    null
+  );
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<number>>(new Set());
 
   const form = useForm<ActivityFormData>({
     defaultValues: {
@@ -128,7 +131,10 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
         setServerResponse({ success: false, message: result.message });
       }
     } catch (error) {
-      setServerResponse({ success: false, message: "네트워크 오류가 발생했습니다." });
+      setServerResponse({
+        success: false,
+        message: "네트워크 오류가 발생했습니다.",
+      });
     } finally {
       setLoading(false);
     }
@@ -167,7 +173,10 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
         setServerResponse({ success: false, message: result.message });
       }
     } catch (error) {
-      setServerResponse({ success: false, message: "네트워크 오류가 발생했습니다." });
+      setServerResponse({
+        success: false,
+        message: "네트워크 오류가 발생했습니다.",
+      });
     } finally {
       setLoading(false);
     }
@@ -193,7 +202,10 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
         setServerResponse({ success: false, message: result.message });
       }
     } catch (error) {
-      setServerResponse({ success: false, message: "네트워크 오류가 발생했습니다." });
+      setServerResponse({
+        success: false,
+        message: "네트워크 오류가 발생했습니다.",
+      });
     } finally {
       setLoading(false);
     }
@@ -231,6 +243,21 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
     }
   };
 
+  const toggleDescription = (activityId: number) => {
+    const newExpanded = new Set(expandedDescriptions);
+    if (newExpanded.has(activityId)) {
+      newExpanded.delete(activityId);
+    } else {
+      newExpanded.add(activityId);
+    }
+    setExpandedDescriptions(newExpanded);
+  };
+
+  const truncateDescription = (description: string, limit: number = 100) => {
+    if (description.length <= limit) return description;
+    return description.substring(0, limit) + "...";
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -247,9 +274,11 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
           <h3 className="text-lg font-semibold">활동 목록</h3>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={openCreateDialog} className="flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                새 활동 추가
+              <Button
+                onClick={openCreateDialog}
+                className="flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />새 활동 추가
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -257,12 +286,13 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
                 <DialogTitle>
                   {editingActivity ? "활동 수정" : "새 활동 추가"}
                 </DialogTitle>
-                <DialogDescription>
-                  활동 정보를 입력해주세요.
-                </DialogDescription>
+                <DialogDescription>활동 정보를 입력해주세요.</DialogDescription>
               </DialogHeader>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
                   <FormField
                     control={form.control}
                     name="title"
@@ -285,7 +315,10 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
                       <FormItem>
                         <FormLabel>활동 설명</FormLabel>
                         <FormControl>
-                          <Input placeholder="활동 설명을 입력하세요" {...field} />
+                          <Input
+                            placeholder="활동 설명을 입력하세요"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -306,7 +339,9 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
                             type="number"
                             placeholder="금액을 입력하세요"
                             {...field}
-                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -320,7 +355,10 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>활동 타입</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="활동 타입을 선택하세요" />
@@ -387,25 +425,57 @@ export const ActivityManagement: React.FC<ActivityManagementProps> = ({
                     key={activity.id}
                     className={`cursor-pointer transition-colors ${
                       selectedActivity?.id === activity.id
-                        ? "bg-blue-50 dark:bg-blue-950 border-blue-500"
+                        ? "bg-blue-50 hover:bg-blue-50 dark:bg-blue-950 border-blue-500"
                         : "hover:bg-gray-50 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => onActivitySelect(activity)}
                   >
-                    <TableCell className="font-medium">{activity.title}</TableCell>
-                    <TableCell>{activity.description}</TableCell>
+                    <TableCell className="font-medium">
+                      {activity.title}
+                    </TableCell>
+                    <TableCell className="max-w-xs">
+                      <div>
+                        <div className="whitespace-pre-wrap">
+                          {expandedDescriptions.has(activity.id)
+                            ? activity.description
+                            : truncateDescription(activity.description)}
+                        </div>
+                        {activity.description.length > 100 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleDescription(activity.id);
+                            }}
+                            className="p-0 h-auto text-blue-600 hover:text-blue-800 mt-1"
+                          >
+                            {expandedDescriptions.has(activity.id)
+                              ? "접기"
+                              : "더보기"}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>{activity.amount} 코인</TableCell>
                     <TableCell>
                       <Badge
                         variant={
-                          activity.type === "club_to_student" ? "default" : "secondary"
+                          activity.type === "club_to_student"
+                            ? "default"
+                            : "secondary"
                         }
                       >
-                        {activity.type === "club_to_student" ? "코인 지급" : "코인 사용"}
+                        {activity.type === "club_to_student"
+                          ? "코인 지급"
+                          : "코인 사용"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                      <div
+                        className="flex gap-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <Button
                           variant="outline"
                           size="sm"

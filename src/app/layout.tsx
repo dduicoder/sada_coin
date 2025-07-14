@@ -9,7 +9,7 @@ import { ThemeProvider } from "next-themes";
 export const metadata: Metadata = {
   // TODO: Update metadata
   // FIXME:
-  title: "SADA COIN",
+  title: "GBS COIN",
   description: "경기북과학고등학교 2025년 학술발표회 코인입니다!",
 };
 

@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -15,6 +15,7 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const body = await request.json();
     const { title, description, amount, type, club_id } = body;
 
@@ -44,7 +45,7 @@ export async function PUT(
     }
 
     // Make request to Flask backend
-    const response = await fetch(`${process.env.BACKEND_URL}/activities/${params.id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/activities/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +80,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -91,8 +92,10 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
+
     // Make request to Flask backend
-    const response = await fetch(`${process.env.BACKEND_URL}/activities/${params.id}`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/activities/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

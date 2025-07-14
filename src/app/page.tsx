@@ -46,7 +46,7 @@ export default function Home() {
       ) : (
         <Card className="mb-8">
           <CardContent className="text-center">
-            <CardTitle className="text-2xl mb-4">SADA 코인 시스템</CardTitle>
+            <CardTitle className="text-2xl mb-4">코인 시스템</CardTitle>
             <CardDescription className="mb-6">
               로그인하여 코인 시스템을 이용해보세요
             </CardDescription>
@@ -65,7 +65,7 @@ export default function Home() {
         <Card className="gap-2">
           <CardHeader>
             <CardTitle className="text-2xl flex justify-between align-center">
-              <div>SADA 코인 시스템</div>
+              <div>GBS 코인 시스템</div>
               <Link href={"/ranking"}>
                 <Button>랭킹 보기</Button>
               </Link>
@@ -75,7 +75,10 @@ export default function Home() {
             <p className="leading-relaxed">
               이 코인은 경기북과학고등학교의 정보 동아리 SADA에서 개발하였으며,
               2025년 학술발표회에서 사용됩니다. 다양한 활동에 참여하고 코인을
-              획득하거나 사용하면서 학술 발표회를 즐겨 보세요!
+              획득하거나 사용하면서 학술 발표회를 즐겨 보세요!{" "}
+              <Link className="text-blue-400" href={"activities"}>
+                동아리별 활동 보러 가기
+              </Link>
             </p>
           </CardContent>
         </Card>
